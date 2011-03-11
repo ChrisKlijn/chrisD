@@ -6,6 +6,8 @@
 #               to see how similar they are
 # -------------------------------------------------------------------
 
+# Run on medoid
+
 library(KCsmart)
 library(gplots)
 data(mmMirrorLocs)
