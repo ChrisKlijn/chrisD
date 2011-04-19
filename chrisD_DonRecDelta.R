@@ -62,7 +62,7 @@ for (d in 1:length(donorHybs)) {
 
 # Plot rainbowplots of the donor, transplant and the delta profile
 
-plotCombs <- colnames(diffKC)[3:]
+plotCombs <- colnames(diffKC)[3:ncol(diffKC)]
 
 altMirrorLocs <- mmMirrorLocs[-21]
 attributes(altMirrorLocs) <- attributes(mmMirrorLocs)
