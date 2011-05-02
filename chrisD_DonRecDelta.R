@@ -42,7 +42,7 @@ names(donorHybs) <- sampleInfo$DRSet[donorIndex]
 for (d in 1:length(donorHybs)) {
   
   # Match the donor 
-  recepientIndex <- intersect(grep(gsub('D', 'R', names(donorNames))[d], sampleInfo$DRSet),
+  recepientIndex <- intersect(grep(gsub('D', 'R', names(donorHybs))[d], sampleInfo$DRSet),
     which(sampleInfo$Site == 'Primary'))
   recepientHybs <- paste(sampleInfo$Slide, sampleInfo$Spot, sep='')[recepientIndex]
   names(recepientHybs) <- sampleInfo$DRSet[recepientIndex]
