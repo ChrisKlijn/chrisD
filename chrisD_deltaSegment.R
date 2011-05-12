@@ -158,6 +158,8 @@ for (d in 1:length(primaryHybs)) {
 
 segRecMet <- diffSeg(diffKCrecMet)
 
+save(file='chrisD_segmentedDelta.Rda', list=c('segRecMet'))
+
 # Make a diffSeg object with 0 -> no sig seg, 1 -> sig seg
 # Do it simple for now -- slow for loop
 # IRanges might have the solution
@@ -187,6 +189,10 @@ for (c in 3:ncol(diffKCrecMet.Seg)) {
   diffKCrecMet.Seg[diffKCrecMet.Seg[,c] < 0,c] <- -.4
 
 }
+
+# Sum over probes to find multiple changed probes
+
+a <- rowSums(diffKCrecMet.Seg[,3:ncol(diffKCrecMet.Seg)])
 
 # Plot overview for all primary tumors
 
@@ -219,7 +225,67 @@ for (tr in uniqTransplant) {
   dev.off()
 }
 
-
-
 diffPlot(diffKCrecMet.Seg, sampleNo=2)
 diffPlot(diffKCrecMet, sampleNo=2, segKC=diffKCrecMet.Seg, squash=T, squashVal=4)
+
+# Scatterplots
+
+
+altMirrorLocs <- mmMirrorLocs[-21]
+attributes(altMirrorLocs) <- attributes(mmMirrorLocs)
+
+tempPlotFrame <- cbind(allKC[,c(donorHybs[1], recepientHybs[1])], 
+  KCnorm[,c(donorHybs[1], recepientHybs[1])])
+tempPlotFrame.filter <- apply(tempPlotFrame, 2, function(x) {filter(x, rep(1, 10)/10)})
+
+plotFrame <- cbind(.5 * (tempPlotFrame[,1] + tempPlotFrame[,2]),
+  tempPlotFrame[,1] - tempPlotFrame[,2], 
+  .5 * (tempPlotFrame[,3] + tempPlotFrame[,4]),
+  tempPlotFrame[,3] - tempPlotFrame[,4])
+
+plotFrame.filter <- cbind(.5 * (tempPlotFrame.filter[,1] + tempPlotFrame.filter[,2]),
+  tempPlotFrame.filter[,1] - tempPlotFrame.filter[,2], 
+  .5 * (tempPlotFrame.filter[,3] + tempPlotFrame.filter[,4]),
+  tempPlotFrame.filter[,3] - tempPlotFrame.filter[,4])
+
+layout(matrix(c(1,1,2,3,4,5,6,6), 4, 2, byrow = TRUE))
+plotRawCghDotPlot(KCdataSet=diffKCdonRec, mirrorLocs=altMirrorLocs, doFilter=T, 
+      samples=1)
+plot(plotFrame[,1], plotFrame[,2], pch='.', main='non-qnorm')
+chr8probes <- allKC$chrom == 8
+points(plotFrame[chr8probes,1], plotFrame[chr8probes, 2], col=rainbow(n=20)[8], 
+  cex=2, pch='.')
+abline(h=0)
+plot(plotFrame[,3], plotFrame[,4], pch='.', main='qnorm')
+chr8probes <- allKC$chrom == 8
+points(plotFrame[chr8probes,3], plotFrame[chr8probes, 4], col=rainbow(n=20)[8], 
+  cex=2, pch='.')
+abline(h=0)
+plot(plotFrame.filter[,1], plotFrame.filter[,2], pch='.', main='non-qnorm filter')
+chr8probes <- allKC$chrom == 8
+points(plotFrame.filter[chr8probes,1], plotFrame.filter[chr8probes, 2], col=rainbow(n=20)[8], 
+  cex=2, pch='.')
+abline(h=0)
+plot(plotFrame.filter[,3], plotFrame.filter[,4], pch='.', main='qnorm filter')
+chr8probes <- allKC$chrom == 8
+points(plotFrame.filter[chr8probes,3], plotFrame.filter[chr8probes, 4], col=rainbow(n=20)[8], 
+  cex=2, pch='.')
+abline(h=0)
+plot(plotFrame.filter[,3], plotFrame.filter[,4], pch=19, cex=1, main='qnorm filter',
+  col=rainbow(n=20, alpha=.1)[allKC$chrom]) 
+abline(h=0)
+
+
+
+plotCols <- col2rgb(rainbow(n = 20), alpha=T)
+plotCols[4,] <- .1
+
+plot(plotFrame.filter[,3], plotFrame.filter[,4], pch=21, cex=.4, main='qnorm filter', 
+  bg=plotCols[,allKC$chrom], lwd=0)
+
+plot(plotFrame.filter[,3], plotFrame.filter[,4], pch='.', cex=1, main='qnorm filter',col=rgb(0,0,0,.1)) 
+plot(plotFrame.filter[,3], plotFrame.filter[,4], pch=19, cex=1, main='qnorm filter',
+  col=rainbow(n=20, alpha=.1)[allKC$chrom]) 
+abline(h=0)
+
+smoothScatter(plotFrame.filter[,3], plotFrame.filter[,4], col=rainbow(n=20)[allKC$chrom])
