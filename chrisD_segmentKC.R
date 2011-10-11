@@ -25,4 +25,9 @@ CNA.allKC <- CNA(as.matrix(allKC[,3:ncol(allKC)]), allKC$chrom, allKC$maploc, da
 CNA.allKC.smoothed <- smooth.CNA(CNA.allKC)
 allKCseg <- segment(CNA.allKC.smoothed, verbose=1, undo.splits='sdundo')
 
+# Fix the segmented data, remove the appended X
+colnames(allKCseg$data) <- gsub('X', '', colnames(allKCseg$data))
+allKCseg$output$ID <- gsub('X','',allKCseg$output$ID)
+
 save(file='chrisD_segmentedKC.Rda', list=c('allKCseg'))
+

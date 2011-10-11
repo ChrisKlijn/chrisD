@@ -26,6 +26,11 @@ library(doMC)
 load('rawData_chrisD.Rda')
 load('chrisD_segmentedKC.Rda')
 data(mmMirrorLocs)
+altMirrorLocs <- mmMirrorLocs[-21]
+attributes(altMirrorLocs) <- attributes(mmMirrorLocs)
+
+# Fix the segmented data, remove the appended X
+colnames(allKCseg$data) <- gsub('X', '', colnames(allKCseg$data))
 
 # Register multicores
 registerDoMC(8)
@@ -34,29 +39,55 @@ registerDoMC(8)
 all.equal(colnames(allKC[,3:ncol(allKC)]), paste(sampleInfo$Slide,
   sampleInfo$Spot, sep=''))
 
+# Remove the negative control sample
+
+negativeControl <- grep('NegativeControl', sampleInfo$SampleID)
+if (length(negativeControl) > 0) {
+  allKC <- allKC[,-(negativeControl+2)]
+  sampleInfo <- sampleInfo[-negativeControl,] 
+}
+
+# Assign tumor numbers to sample, NA warning for the negative control
+sampleInfo$tumNum <- as.numeric(gsub('[A-Z|a-z]','', sampleInfo$DRSet))
+# Assign CGHID
+sampleInfo$CGHID <- paste(sampleInfo$Slide, sampleInfo$Spot, sep='')
+
 # Deltas between donor tumors and recepient tumors
 # Aggregate per tumor
 
 # First define the donor hybs and name them
 
-donorIndex <- grep('D[1-3]', sampleInfo$DRSet)
-names(donorIndex) <- sampleInfo$DRSet[donorIndex]
-donorList <- vector(mode='list', length=length(donorIndex))
-names(donorList) <- names(donorIndex)
+tumNums <- unique(sampleInfo$tumNum)
+diffList <- vector(mode='list', length=length(tumNums))
+names(diffList) <- paste('T', tumNums, sep='')
 
-for (d in donorIndex) {
-  recepientIndex <- with(sampleInfo, intersect(grep(gsub('D', 'R', DRSet[d]), DRSet), which(Site == 'Primary')))
-  names(recepientIndex) <- sampleInfo$DRSet[recepientIndex]
+for (t in tumNums) {
+  tempSampInfo <- subset(sampleInfo, tumNum == t)
+  donorSample <- tempSampInfo$CGHID[grep('D', tempSampInfo$DRSet)]
+  recepientSamples <- tempSampInfo$CGHID[grepl('R', tempSampInfo$DRSet) &
+   tempSampInfo$Site == 'Primary']
+  names(recepientSamples) <- tempSampInfo$DRSet[grepl('R', 
+    tempSampInfo$DRSet) & tempSampInfo$Site == 'Primary']
+  
+  resultList <- vector(mode='list', length=length(recepientSamples))
+  names(resultList) <- names(recepientSamples)
 
-  recepientList <- vector(mode='list', length=length(recepientIndex))
-  names(recepientList) <- names(recepientIndex)
-
-  foreach(r=recepientIndex) %dopar% {
-    
-    recepientList[names(r)] <- deltaLinear(comb=c(d+2, r+2), KC=allKC, KCseg=allKCseg)
-
+  for (r in 1:length(recepientSamples)) {
+    tempKC <- allKC[,c('chrom', 'maploc', recepientSamples[r],
+      donorSample)]
+    tempSeg <- subset(allKCseg, 
+      samplelist=c(recepientSamples[r], donorSample))
+    resultList[[names(recepientSamples)[r]]] <-
+      deltaLinear(comb= c(recepientSamples[r], donorSample), 
+      tempKC, tempSeg, thres=.2)
   }
 
-  donorList[names(d)] <- recepientList
+  diffList[[paste('T', t, sep='')]] <- 
+    cbind(allKC[, c('chrom', 'maploc')], resultList)
 
 }
+
+x11()
+plotRawCghDotPlot(KCdataSet=allKC, mirrorLocs=altMirrorLocs, doFilter=T, samples=24, chromosomes=6, setcex=2)
+plotRawCghDotPlot(KCdataSet=allKC, mirrorLocs=altMirrorLocs, doFilter=T, samples=25, chromosomes=6, setcex=2)
+plotRawCghDotPlot(KCdataSet=diffList[['T1']], mirrorLocs=altMirrorLocs, doFilter=T, samples=1
