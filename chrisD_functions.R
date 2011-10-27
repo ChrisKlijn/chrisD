@@ -43,7 +43,7 @@ plotMetMat <- function (metMat, KC.Seg, plotTitle=NA) {
     start <- 0
     for (i in 1:length(tumVect$length)) {
       rect(start, j-1, tumVect$length[i]+start, j, 
-        col=cols[tumVect$value[i]+2], border=NA)
+        col=gainLossCols[tumVect$value[i]+2], border=NA)
       start <- tumVect$length[i] + start + 1
     }
     rect(start+1000, j-1, start+4000, j, 

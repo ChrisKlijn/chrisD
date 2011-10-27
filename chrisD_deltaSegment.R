@@ -158,7 +158,7 @@ for (d in 1:length(primaryHybs)) {
 
 segRecMet <- diffSeg(diffKCrecMet)
 
-save(file='chrisD_segmentedDelta.Rda', list=c('segRecMet'))
+save(file='chrisD_segmentedDelta.Rda', list=c('segRecMet', 'diffKCrecMet'))
 
 # Make a diffSeg object with 0 -> no sig seg, 1 -> sig seg
 # Do it simple for now -- slow for loop
