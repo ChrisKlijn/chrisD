@@ -58,3 +58,27 @@ plotMetMat <- function (metMat, KC.Seg, plotTitle=NA) {
   legend('topleft', fill=c(gainLossCols, closeCols), cex=.7,
     legend=c('loss','none','gain','localMeta', 'distantMeta'), horiz=T)
 }
+
+plotCorMap <- function (dataMat, classLabels, labs, plotTitle='Temp',
+  plotCol=NULL) {
+  
+  require(gplots)
+     
+  corMat <- cor(dataMat, use='na.or.complete')
+
+  if (is.null(plotCol)) {
+    plotCol <- colorpanel(n=length(unique(classLabels)),
+      low=colors()[24],
+      high=colors()[349])
+  }
+  
+  colIndex <- as.numeric(as.factor(classLabels))
+
+  heatmap(corMat, scale='none', labRow=labs, labCol=labs, 
+    col=colorpanel(265, low='blue', high='yellow'), margins=c(10,10),
+    ColSideColors=plotCol[colIndex],
+    RowSideColors=plotCol[colIndex],
+    main=plotTitle)
+
+
+}

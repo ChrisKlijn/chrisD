@@ -16,14 +16,18 @@ load('chrisD_segmentedDelta.Rda')
 source('~/codeChris/generalFunctionsR/chris_cghdata_analysis.R')
 source('~/codeChris/smallProjects/chrisD/chrisD_functions.R')
 
-# Only count segments with more than 5 probes and set everything above or below .1 to 0
+# Only count segments with more than 5 probes and set everything between the thresholds to 0
+
+threshold <- .2
+
 segData <- segRecMet$output
 segData$seg.mean[segData$num.mark < 5] <- 0
-segData$seg.mean[abs(segData$seg.mean) < .1] <- 0
-segData$seg.mean[segData$seg.mean < -.1] <- -1
-segData$seg.mean[segData$seg.mean > .1] <- 1
+segData$seg.mean[abs(segData$seg.mean) < threshold] <- 0
+segData$seg.mean[segData$seg.mean < -threshold] <- -1
+segData$seg.mean[segData$seg.mean > threshold] <- 1
 
 # Fix a weird renaming thing in DNAcopy
+# replace the three consequtive dots with a dash
 segData$ID <- gsub('[.]{3}', ' - ', segData$ID)
 
 # Set probevalues to segment values
@@ -43,7 +47,7 @@ for (s in 1:nrow(segData)) {
 recep <- c('R1', 'R2', 'R3')
 
 for (r in recep) {
-  png(file=paste('Figures/', r, 'priMetaDiff.png', sep=''), 
+  png(file=paste('Figures/', r, 'priMetaDiff_02_black.png', sep=''), 
     width=1000, height=800)
   metMat <- as.matrix(diffKCrecMet.Seg[,
     grepl(r, colnames(diffKCrecMet.Seg))])
