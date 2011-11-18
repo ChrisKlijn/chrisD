@@ -11,7 +11,7 @@
 library(KCsmart)
 library(gplots)
 data(mmMirrorLocs)
-source('~/codeChris/smallProjects/chrisD/chrisD_functions.R')
+source('~/gitCodeChris/chrisD/chrisD_functions.R')
 
 setwd("/home/klijn/data/smallproj/chrisD/")
 load('rawData_chrisD.Rda')

@@ -10,7 +10,7 @@
 library(KCsmart)
 data(mmMirrorLocs)
 setwd("/home/klijn/data/smallproj/chrisD/")
-source('~/codeChris/generalFunctionsR/chris_cghdata_analysis.R')
+source('~/gitCodeChris/generalFunctionsR/chris_cghdata_analysis.R')
 load('rawData_chrisD.Rda')
 
 # Remove the CMF control 

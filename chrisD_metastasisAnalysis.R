@@ -13,8 +13,8 @@ data(mmMirrorLocs)
 setwd("/home/klijn/data/smallproj/chrisD/")
 load('rawData_chrisD.Rda')
 load('chrisD_segmentedDelta.Rda')
-source('~/codeChris/generalFunctionsR/chris_cghdata_analysis.R')
-source('~/codeChris/smallProjects/chrisD/chrisD_functions.R')
+source('~/gitCodeChris/generalFunctionsR/chris_cghdata_analysis.R')
+source('~/gitCodeChris/chrisD/chrisD_functions.R')
 
 # Only count segments with more than 5 probes and set everything between the thresholds to 0
 

@@ -14,7 +14,7 @@ library(preprocessCore)
 data(mmMirrorLocs)
 setwd("/home/klijn/data/smallproj/chrisD/")
 load('rawData_chrisD.Rda')
-source('~/codeChris/generalFunctionsR/chris_cghdata_analysis.R')
+source('~/gitCodeChris/generalFunctionsR/chris_cghdata_analysis.R')
 
 # ----- FUNCTIONS ------
 
