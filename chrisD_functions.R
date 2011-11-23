@@ -64,7 +64,7 @@ plotMetMat <- function (metMat, KC.Seg, plotTitle=NA) {
 plotCorMap <- function (dataMat, classLabels, labs, plotTitle='Temp',
   plotCol=NULL) {
   
-  require(gplots)
+  require(gplots) # For colorpanel and heatmap.2
      
   corMat <- cor(dataMat, use='na.or.complete')
 
@@ -76,8 +76,10 @@ plotCorMap <- function (dataMat, classLabels, labs, plotTitle='Temp',
   
   colIndex <- as.numeric(as.factor(classLabels))
 
-  heatmap(corMat, scale='none', labRow=labs, labCol=labs, 
+  heatmap.2(corMat, scale='none', trace='none',
+    labRow=labs, labCol=labs, 
     col=colorpanel(265, low='blue', high='yellow'), margins=c(10,10),
+    density.info='none',
     ColSideColors=plotCol[colIndex],
     RowSideColors=plotCol[colIndex],
     main=plotTitle)
