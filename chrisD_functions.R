@@ -11,8 +11,8 @@ plotMetMat <- function (metMat, KC.Seg, plotTitle=NA) {
   # significant delta value yes/no
   # Also provide KC.Seg to calculate the probe-based chromosome ends
 
-  probeChromEnds <- cumsum(tapply(diffKCrecMet.Seg$maploc, 
-    diffKCrecMet.Seg$chrom, length))
+  probeChromEnds <- cumsum(tapply(KC.Seg$maploc, 
+    KC.Seg$chrom, length))
 
   # Order the matrix on tumor ID, and far or close metas
   tumorSiteInfo <- unlist(strsplit(colnames(metMat), split = ' - '))
@@ -25,7 +25,9 @@ plotMetMat <- function (metMat, KC.Seg, plotTitle=NA) {
   orderFrame <- orderFrame[orderVect,]
   metMat <- metMat[,orderVect]
 
-  # Set colors
+  # Set colors, mid is the background color, low is the color of the
+  # negative differences and high is the color of the positive 
+  # differences
   gainLossCols <- colorpanel(3, low='green', mid='black', high='orange')
   closeCols <- colorpanel(2, low='blue', high='red')
   tumorCols <- colorpanel(length(unique(orderFrame$tumorID)), 
